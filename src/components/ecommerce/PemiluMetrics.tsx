@@ -1,16 +1,9 @@
 "use client";
 
 import { GroupIcon } from "@/icons";
-import {
-  CircleDashedCheck,
-  CircleUserRound,
-  CircleX,
-  LandPlot,
-  TicketCheck,
-  Vote,
-} from "lucide-react";
+import { CircleDashedCheck, CircleX, TicketCheck, Vote } from "lucide-react";
 
-export const EcommerceMetrics = () => {
+export const PemiluMetrics = () => {
   return (
     <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4">
       {/* <!-- Metric Item Start --> */}
