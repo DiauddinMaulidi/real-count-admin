@@ -2,8 +2,28 @@
 
 import { GroupIcon } from "@/icons";
 import { CircleDashedCheck, CircleX, TicketCheck, Vote } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export const PemiluMetrics = () => {
+  const [countsTps, setCountsTps] = useState(0);
+
+  useEffect(() => {
+    async function jumlahTps() {
+      try {
+        const res = await fetch("/api/tps");
+        if (!res.ok) {
+          throw new Error("gagal mengambil data tps");
+        }
+
+        const data = await res.json();
+        setCountsTps(data.countsTps);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    jumlahTps();
+  }, []);
+
   return (
     <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4">
       {/* <!-- Metric Item Start --> */}
@@ -37,7 +57,7 @@ export const PemiluMetrics = () => {
               TPS TERVERIFIKASI
             </span>
             <h4 className="mt-2 text-title-sm font-bold text-gray-800 dark:text-white/90">
-              2
+              {countsTps}
             </h4>
           </div>
         </div>

@@ -1,4 +1,5 @@
-import { useTranslations } from "next-intl";
+"use client";
+
 import Image from "next/image";
 import Badge from "../ui/badge/Badge";
 import {
@@ -8,32 +9,53 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import { useEffect, useState } from "react";
 
 // Define the TypeScript interface for the table rows
-interface Product {
-  id: number; // Unique identifier for each product
-  name: string; // Product name
-  wilayah: string; // Number of wilayah
-  dpt: number;
+interface Tps {
+  id: number;
+  namaTps: string;
+  wilayah: string;
+  jumlahPemilih: number;
   masuk: number;
-  image: string; // URL or path to the product image
-  bukti: string; // Status of the product
+  img: string;
 }
 
-// Define the table data using the interface
-const tableData: Product[] = [
-  {
-    id: 1,
-    name: "TPS 01",
-    wilayah: "Dusun 1/RT 01",
-    dpt: 200,
-    masuk: 198,
-    bukti: "selesai",
-    image: "/images/product/product-01.jpg", // Replace with actual image URL
-  },
-];
-
 export default function Rekapitulasi() {
+  const [dataTps, setDataTps] = useState<Tps[]>([]);
+  const [counts, setCounts] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function fetchTps() {
+      try {
+        const response = await fetch("/api/tps");
+        if (!response.ok) {
+          throw new Error("Gagal mengambil data tps");
+        }
+
+        const data = await response.json();
+        setDataTps(data.dataTps);
+        setCounts(data.countsTps);
+      } catch {
+        setError("Data tps gagal dimuat.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchTps();
+  }, []);
+
+  if (loading) {
+    return <p className="p-6">Memuat data pengguna...</p>;
+  }
+
+  if (error) {
+    return <p className="p-6 text-red-500">{error}</p>;
+  }
+
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pt-4 pb-3 sm:px-6 dark:border-gray-800 dark:bg-white/3">
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -45,7 +67,7 @@ export default function Rekapitulasi() {
 
         <div className="flex items-center gap-3">
           <span className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/3 dark:hover:text-gray-200">
-            18/20 Final
+            3/{counts} Final
           </span>
         </div>
       </div>
@@ -84,43 +106,34 @@ export default function Rekapitulasi() {
           {/* Table Body */}
 
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {tableData.map((product) => (
-              <TableRow key={product.id} className="">
+            {dataTps.map((data) => (
+              <TableRow key={data.id} className="">
                 <TableCell className="py-3">
                   <div className="flex items-center gap-3">
-                    <div className="h-12.5 w-12.5 overflow-hidden rounded-md">
-                      <Image
-                        width={50}
-                        height={50}
-                        src={product.image}
-                        className="h-12.5 w-12.5"
-                        alt={product.name}
-                      />
-                    </div>
                     <div>
                       <p className="text-theme-sm font-medium text-gray-800 dark:text-white/90">
-                        {product.name}
+                        {data.namaTps}
                       </p>
                       <span className="text-theme-xs text-gray-500 dark:text-gray-400">
-                        {product.wilayah}
+                        {data.wilayah}
                       </span>
                     </div>
                   </div>
                 </TableCell>
                 <TableCell className="py-3 text-theme-sm text-gray-500 dark:text-gray-400">
-                  {product.dpt}
+                  {data.jumlahPemilih}
                 </TableCell>
                 <TableCell className="py-3 text-theme-sm text-gray-500 dark:text-gray-400">
-                  {product.masuk}
+                  {data.masuk}
                 </TableCell>
-                <TableCell className="py-3 text-theme-sm text-gray-500 dark:text-gray-400">
+                {/* <TableCell className="py-3 text-theme-sm text-gray-500 dark:text-gray-400">
                   <Badge
                     size="sm"
-                    color={product.bukti === "selesai" ? "success" : "error"}
+                    color={data.im === "selesai" ? "success" : "error"}
                   >
-                    {product.bukti}
+                    {data.bukti}
                   </Badge>
-                </TableCell>
+                </TableCell> */}
               </TableRow>
             ))}
           </TableBody>

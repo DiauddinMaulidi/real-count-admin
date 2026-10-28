@@ -1,7 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
   provider = "prisma-client"
@@ -10,4 +6,64 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  PETUGAS_TPS
+}
+
+enum StatusHasil {
+  DRAFT
+  MENUNGGU_VERIFIKASI
+  TERVERIFIKASI
+  DITOLAK
+}
+
+model User {
+  id            Int @id @default(autoincrement())
+  namaUser      String
+  username      String @unique
+  password      String?
+  role          Role   @default(PETUGAS_TPS)
+  tpsId         Int?
+  tps           Tps?   @relation(fields: [tpsId], references: [id])
+}
+
+model Tps { 
+  id            Int     @id @default(autoincrement()) 
+  namaTps       String
+  wilayah       String?
+  jumlahPemilih Int
+  img           String?
+  petugas       User[]
+  hasilTpsId    HasilTps?
+}
+
+model Calon {
+  id            Int     @id @default(autoincrement())
+  namaCalon     String
+  nomorUrut     Int     @unique
+  foto          String?
+  detailSuara   DetailSuara[]
+}
+
+model HasilTps {
+  id            Int     @id @default(autoincrement())
+  tpsId         Int     @unique
+  suaraTidakSah Int     @default(0)
+  status        StatusHasil @default(DRAFT)
+  tps           Tps     @relation(fields: [tpsId], references: [id])
+  detailSuara   DetailSuara[]
+}
+
+model DetailSuara {
+  id            Int     @id @default(autoincrement())
+  hasilTpsId    Int
+  calonId       Int
+  jumlahSuara   Int     @default(0)
+  hasilTps      HasilTps  @relation(fields: [hasilTpsId], references: [id])
+  calon         Calon     @relation(fields: [calonId], references: [id])
+  
+  @@unique([hasilTpsId, calonId])
 }
