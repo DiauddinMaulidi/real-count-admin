@@ -35,7 +35,6 @@ model Tps {
   namaTps       String
   wilayah       String?
   jumlahPemilih Int
-  img           String?
   petugas       User[]
   hasilTpsId    HasilTps?
 }
@@ -54,6 +53,7 @@ model HasilTps {
   suaraTidakSah Int     @default(0)
   status        StatusHasil @default(DRAFT)
   tps           Tps     @relation(fields: [tpsId], references: [id])
+  img           String?
   detailSuara   DetailSuara[]
 }
 

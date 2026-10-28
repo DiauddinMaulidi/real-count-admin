@@ -4,25 +4,79 @@ import { GroupIcon } from "@/icons";
 import { CircleDashedCheck, CircleX, TicketCheck, Vote } from "lucide-react";
 import { useEffect, useState } from "react";
 
+interface HasilSuara {
+  id: number;
+  hasilTpsId: number;
+  calonId: number;
+  jumlahSuara: number;
+}
+
+interface HasilTps {
+  id: number;
+  tpsId: number;
+  suaraTidakSah: number;
+  status: string;
+  img: string;
+}
+
+interface Tps {
+  id: number;
+  namaTps: string;
+  wilayah: string;
+  jumlahPemilih: number;
+  masuk: number;
+}
+
 export const PemiluMetrics = () => {
   const [countsTps, setCountsTps] = useState(0);
+  const [hasilSuara, setHasilSuara] = useState<HasilSuara[]>([]);
+  const [hasilTps, setHasilTps] = useState<HasilTps[]>([]);
+  const [dataDpt, setDataDpt] = useState<Tps[]>([]);
 
   useEffect(() => {
-    async function jumlahTps() {
+    async function fetchData() {
       try {
-        const res = await fetch("/api/tps");
-        if (!res.ok) {
-          throw new Error("gagal mengambil data tps");
+        const [resTps, resSuara, resHasilTps] = await Promise.all([
+          fetch("/api/tps"),
+          fetch("/api/suara"),
+          fetch("/api/hasilTps"),
+        ]);
+
+        if (!resTps.ok || !resSuara.ok || !resHasilTps.ok) {
+          throw new Error("gagal mengambil data");
         }
 
-        const data = await res.json();
-        setCountsTps(data.countsTps);
+        const [dataSuara, dataTps, dataHasilTps] = await Promise.all([
+          resSuara.json(),
+          resTps.json(),
+          resHasilTps.json(),
+        ]);
+
+        setHasilSuara(dataSuara);
+        setCountsTps(dataTps.countsTps);
+        setHasilTps(dataHasilTps);
+        setDataDpt(dataTps.dataTps);
       } catch (error) {
-        console.log(error);
+        console.error("Gagal mengambil data:", error);
       }
     }
-    jumlahTps();
+    fetchData();
   }, []);
+
+  const dataPemilihTetap = dataDpt.reduce(
+    (total, item) => total + item.jumlahPemilih,
+    0,
+  );
+
+  const dataSuaraTidakSah = hasilTps.reduce(
+    (total, item) => total + item.suaraTidakSah,
+    0,
+  );
+
+  const totalSuara = hasilSuara.reduce(
+    (total, item) => total + item.jumlahSuara,
+    0,
+  );
 
   return (
     <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4">
@@ -38,7 +92,7 @@ export const PemiluMetrics = () => {
               TOTAL DPT
             </span>
             <h4 className="mt-2 text-title-sm font-bold text-gray-800 dark:text-white/90">
-              7.450
+              {dataPemilihTetap}
             </h4>
           </div>
         </div>
@@ -76,7 +130,7 @@ export const PemiluMetrics = () => {
               SUARA MASUK
             </span>
             <h4 className="mt-2 text-title-sm font-bold text-gray-800 dark:text-white/90">
-              1.258.394
+              {totalSuara}
             </h4>
           </div>
         </div>
@@ -94,7 +148,7 @@ export const PemiluMetrics = () => {
               SUARA SAH
             </span>
             <h4 className="mt-2 text-title-sm font-bold text-gray-800 dark:text-white/90">
-              30
+              {totalSuara - dataSuaraTidakSah}
             </h4>
           </div>
         </div>
@@ -112,7 +166,7 @@ export const PemiluMetrics = () => {
               SUARA TIDAK SAH
             </span>
             <h4 className="mt-2 text-title-sm font-bold text-gray-800 dark:text-white/90">
-              30
+              {dataSuaraTidakSah}
             </h4>
           </div>
         </div>

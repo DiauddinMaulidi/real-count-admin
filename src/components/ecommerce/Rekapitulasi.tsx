@@ -1,7 +1,5 @@
 "use client";
 
-import Image from "next/image";
-import Badge from "../ui/badge/Badge";
 import {
   Table,
   TableBody,
@@ -18,26 +16,41 @@ interface Tps {
   wilayah: string;
   jumlahPemilih: number;
   masuk: number;
-  img: string;
+}
+
+interface HasilSuara {
+  id: number;
+  hasilTpsId: number;
+  calonId: number;
+  jumlahSuara: number;
 }
 
 export default function Rekapitulasi() {
   const [dataTps, setDataTps] = useState<Tps[]>([]);
   const [counts, setCounts] = useState(0);
+  const [hasilSuara, setHasilSuara] = useState<HasilSuara[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     async function fetchTps() {
       try {
-        const response = await fetch("/api/tps");
-        if (!response.ok) {
-          throw new Error("Gagal mengambil data tps");
+        const [resTps, resSuaraTps] = await Promise.all([
+          fetch("/api/tps"),
+          fetch("/api/suara"),
+        ]);
+        if (!resTps.ok || !resSuaraTps.ok) {
+          throw new Error("Gagal mengambil data per-TPS");
         }
 
-        const data = await response.json();
-        setDataTps(data.dataTps);
-        setCounts(data.countsTps);
+        const [dataTps, dataSuaraTps] = await Promise.all([
+          resTps.json(),
+          resSuaraTps.json(),
+        ]);
+        setDataTps(dataTps.dataTps);
+        setCounts(dataTps.countsTps);
+
+        setHasilSuara(dataSuaraTps);
       } catch {
         setError("Data tps gagal dimuat.");
       } finally {
@@ -47,6 +60,12 @@ export default function Rekapitulasi() {
 
     fetchTps();
   }, []);
+
+  const totalSuaraTps = (hasilTpsId: number) => {
+    return hasilSuara
+      .filter((item) => item.hasilTpsId === hasilTpsId)
+      .reduce((total, item) => total + item.jumlahSuara, 0);
+  };
 
   if (loading) {
     return <p className="p-6">Memuat data pengguna...</p>;
@@ -124,7 +143,7 @@ export default function Rekapitulasi() {
                   {data.jumlahPemilih}
                 </TableCell>
                 <TableCell className="py-3 text-theme-sm text-gray-500 dark:text-gray-400">
-                  {data.masuk}
+                  {totalSuaraTps(data.id)}
                 </TableCell>
                 {/* <TableCell className="py-3 text-theme-sm text-gray-500 dark:text-gray-400">
                   <Badge
