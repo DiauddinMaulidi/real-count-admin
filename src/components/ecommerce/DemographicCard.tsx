@@ -12,7 +12,7 @@ import { useState } from "react";
 const tpsData = [
   {
     id: 1,
-    name: "TPS 08",
+    name: "TPS 01",
     officer: "Aris Munandar",
     time: "15:38 WIB",
     title: "Form Model C1-Desa",

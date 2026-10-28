@@ -143,7 +143,7 @@ const AppSidebar: React.FC = () => {
               {nav.new && (isExpanded || isHovered || isMobileOpen) && (
                 <span
                   className={cn(
-                    "inset-e-10 absolute ms-auto",
+                    "absolute inset-e-10 ms-auto",
                     openSubmenu?.type === menuType &&
                       openSubmenu?.index === index
                       ? "menu-dropdown-badge-active"
@@ -337,7 +337,7 @@ const AppSidebar: React.FC = () => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={`flex py-8 ${
+        className={`flex py-4 ${
           !isExpanded && !isHovered ? "xl:justify-center" : "justify-start"
         }`}
       >
@@ -346,18 +346,18 @@ const AppSidebar: React.FC = () => {
             <>
               <Image
                 className="dark:hidden"
-                src="/images/logo/logo.svg"
+                src="/images/logo/village.png"
                 alt="Logo"
-                width={150}
+                width={120}
                 height={40}
                 priority
                 style={{ width: "auto", height: "auto" }}
               />
               <Image
                 className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
+                src="/images/logo/village.png"
                 alt="Logo"
-                width={150}
+                width={120}
                 height={40}
                 priority
                 style={{ width: "auto", height: "auto" }}

@@ -17,7 +17,7 @@ interface Product {
   dpt: number;
   masuk: number;
   image: string; // URL or path to the product image
-  bukti: number; // Status of the product
+  bukti: string; // Status of the product
 }
 
 // Define the table data using the interface
@@ -28,14 +28,12 @@ const tableData: Product[] = [
     wilayah: "Dusun 1/RT 01",
     dpt: 200,
     masuk: 198,
-    bukti: 3,
+    bukti: "selesai",
     image: "/images/product/product-01.jpg", // Replace with actual image URL
   },
 ];
 
 export default function Rekapitulasi() {
-  const t = useTranslations("ecommerce.recentOrders");
-
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pt-4 pb-3 sm:px-6 dark:border-gray-800 dark:bg-white/3">
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -118,15 +116,9 @@ export default function Rekapitulasi() {
                 <TableCell className="py-3 text-theme-sm text-gray-500 dark:text-gray-400">
                   <Badge
                     size="sm"
-                    color={
-                      product.bukti === 3
-                        ? "success"
-                        : product.bukti !== 3
-                          ? "warning"
-                          : "error"
-                    }
+                    color={product.bukti === "selesai" ? "success" : "error"}
                   >
-                    Saksi {product.bukti}/3
+                    {product.bukti}
                   </Badge>
                 </TableCell>
               </TableRow>

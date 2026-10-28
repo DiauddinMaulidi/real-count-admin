@@ -13,6 +13,11 @@
 # next.js
 /.next/
 /out/
+/.agents/
+/.claude/
+/.cursor/
+/.devin/
+/.windsurf/
 
 # production
 /build
@@ -35,3 +40,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/generated/prisma
