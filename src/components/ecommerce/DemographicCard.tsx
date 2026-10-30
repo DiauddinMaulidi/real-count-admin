@@ -1,35 +1,78 @@
 "use client";
 
-import {
-  ChevronDown,
-  FileCheck2,
-  GitCompareArrows,
-  ShieldCheck,
-} from "lucide-react";
+import { ChevronDown, FileCheck2 } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { DropdownMenuBasic } from "../form/ButtonVerif";
 
-const tpsData = [
-  {
-    id: 1,
-    name: "TPS 01",
-    officer: "Aris Munandar",
-    time: "15:38 WIB",
-    title: "Form Model C1-Desa",
-    image: "/images/cards/card-01.png",
-  },
-  {
-    id: 2,
-    name: "TPS 09",
-    officer: "Aris Sudianto",
-    time: "15:38 WIB",
-    title: "Form Model C1-Desa",
-    image: "/images/cards/card-02.jpg",
-  },
-];
+interface HasilTps {
+  id: number;
+  tpsId: number;
+  suaraTidakSah: number;
+  status: string;
+  img: string;
+  createdAt: string;
+  updatedAt: string;
+  tps: {
+    namaTps: string;
+    wilayah: string | null;
+    namaSaksi: string;
+    jumlahPemilih: number;
+  };
+}
 
 export default function DemographicCard() {
   const [openId, setOpenId] = useState<number | null>(null);
+  const [hasilTps, setHasilTps] = useState<HasilTps[]>([]);
+
+  useEffect(() => {
+    async function fetctBukti() {
+      try {
+        const [resHasilTps] = await Promise.all([fetch("/api/hasilTps")]);
+
+        if (!resHasilTps.ok) {
+          throw new Error("gagal mengambil data bukti TPS");
+        }
+
+        const [dataHasilTps] = await Promise.all([resHasilTps.json()]);
+
+        setHasilTps(dataHasilTps);
+      } catch (error) {
+        console.error("Gagal memuat data", error);
+      }
+    }
+
+    fetctBukti();
+  }, []);
+
+  const handleStatusChange = async (id: number, status: string) => {
+    // Simpan status lama untuk antisipasi jika API gagal
+    const previousData = hasilTps;
+
+    // Perbarui tampilan secara langsung
+    setHasilTps((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, status } : item)),
+    );
+
+    try {
+      const res = await fetch(`/api/hasilTps/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Gagal memperbarui status TPS");
+      }
+    } catch (error) {
+      // Kembalikan data jika penyimpanan gagal
+      setHasilTps(previousData);
+      console.error("Gagal memperbarui status:", error);
+      alert("Status gagal disimpan ke database.");
+    }
+  };
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 dark:border-gray-800 dark:bg-white/3">
@@ -44,7 +87,7 @@ export default function DemographicCard() {
       <div className="space-y-5">
         <div>
           <div className="my-5 flex flex-col items-center gap-3">
-            {tpsData.map((tps) => {
+            {hasilTps.map((tps) => {
               const isOpen = openId === tps.id;
 
               return (
@@ -64,7 +107,7 @@ export default function DemographicCard() {
 
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-gray-800 dark:text-white">
-                        {tps.name}
+                        {tps.tps.namaTps}
                       </p>
                       <p className="text-xs text-zinc-900 dark:text-zinc-400">
                         Bukti hasil perhitungan suara
@@ -85,7 +128,7 @@ export default function DemographicCard() {
                         <div className="mb-3 flex items-start justify-between gap-2">
                           <div>
                             <h3 className="text-xs font-bold text-slate-800">
-                              {tps.title} ({tps.name})
+                              {tps.tps.namaTps} ({tps.tps.wilayah})
                             </h3>
                             <p className="mt-1 text-[10px] text-slate-500">
                               Bukti unggahan petugas TPS
@@ -93,15 +136,23 @@ export default function DemographicCard() {
                           </div>
 
                           <span className="shrink-0 text-[10px] text-slate-500">
-                            {tps.time}
+                            Diupload:{" "}
+                            {new Date(tps.createdAt).toLocaleString("id-ID", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              timeZone: "UTC",
+                            })}
                           </span>
                         </div>
 
                         {/* Photo evidence */}
                         <div className="overflow-hidden rounded-md border border-slate-200 bg-slate-100">
                           <Image
-                            src={tps.image}
-                            alt={`Dokumen C1 ${tps.name}`}
+                            src={tps.img}
+                            alt={`Dokumen C1 ${tps.status}`}
                             className="h-44 w-full object-cover"
                             width={500}
                             height={500}
@@ -116,10 +167,17 @@ export default function DemographicCard() {
                             />
                             <div className="min-w-0">
                               <p className="text-[12px]">
-                                Saksi Pengunggah: <b>Sdr. {tps.officer}</b>
+                                Saksi Pengunggah:{" "}
+                                <b>Sdr. {tps.tps.namaSaksi}</b>
                               </p>
                             </div>
                           </div>
+                          <DropdownMenuBasic
+                            status={tps.status}
+                            onStatusChange={(status) => {
+                              handleStatusChange(tps.id, status);
+                            }}
+                          />
                         </div>
                       </div>
                     </div>

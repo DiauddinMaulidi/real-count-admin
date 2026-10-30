@@ -15,7 +15,6 @@ enum Role {
 
 enum StatusHasil {
   DRAFT
-  MENUNGGU_VERIFIKASI
   TERVERIFIKASI
   DITOLAK
 }
@@ -37,6 +36,7 @@ model Tps {
   jumlahPemilih Int
   petugas       User[]
   hasilTpsId    HasilTps?
+  namaSaksi     String?
 }
 
 model Calon {
@@ -55,6 +55,8 @@ model HasilTps {
   tps           Tps     @relation(fields: [tpsId], references: [id])
   img           String?
   detailSuara   DetailSuara[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
 }
 
 model DetailSuara {

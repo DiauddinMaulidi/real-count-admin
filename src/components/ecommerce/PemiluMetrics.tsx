@@ -42,6 +42,18 @@ export const PemiluMetrics = () => {
           fetch("/api/hasilTps"),
         ]);
 
+        console.log("Status API:", {
+          tps: resTps.status,
+          suara: resSuara.status,
+          hasilTps: resHasilTps.status,
+        });
+
+        console.log("Respons API:", {
+          tps: await resTps.clone().text(),
+          suara: await resSuara.clone().text(),
+          hasilTps: await resHasilTps.clone().text(),
+        });
+
         if (!resTps.ok || !resSuara.ok || !resHasilTps.ok) {
           throw new Error("gagal mengambil data");
         }

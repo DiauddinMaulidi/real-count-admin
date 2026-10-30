@@ -18,6 +18,12 @@ interface Tps {
   masuk: number;
 }
 
+interface HasilTps {
+  id: number;
+  tpsId: number;
+  status: string;
+}
+
 interface HasilSuara {
   id: number;
   hasilTpsId: number;
@@ -31,26 +37,30 @@ export default function Rekapitulasi() {
   const [hasilSuara, setHasilSuara] = useState<HasilSuara[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [hasilTps, setHasilTps] = useState<HasilTps[]>([]);
 
   useEffect(() => {
     async function fetchTps() {
       try {
-        const [resTps, resSuaraTps] = await Promise.all([
+        const [resTps, resSuaraTps, resHasilTps] = await Promise.all([
           fetch("/api/tps"),
           fetch("/api/suara"),
+          fetch("/api/hasilTps"),
         ]);
-        if (!resTps.ok || !resSuaraTps.ok) {
+        if (!resTps.ok || !resSuaraTps.ok || !resHasilTps.ok) {
           throw new Error("Gagal mengambil data per-TPS");
         }
 
-        const [dataTps, dataSuaraTps] = await Promise.all([
+        const [dataTps, dataSuaraTps, dataHasilTps] = await Promise.all([
           resTps.json(),
           resSuaraTps.json(),
+          resHasilTps.json(),
         ]);
         setDataTps(dataTps.dataTps);
         setCounts(dataTps.countsTps);
 
         setHasilSuara(dataSuaraTps);
+        setHasilTps(dataHasilTps);
       } catch {
         setError("Data tps gagal dimuat.");
       } finally {
@@ -65,6 +75,12 @@ export default function Rekapitulasi() {
     return hasilSuara
       .filter((item) => item.hasilTpsId === hasilTpsId)
       .reduce((total, item) => total + item.jumlahSuara, 0);
+  };
+
+  const finalBukti = () => {
+    return hasilTps
+      .filter((item) => item.status === "TERVERIFIKASI")
+      .reduce((total, _) => total + 1, 0);
   };
 
   if (loading) {
@@ -86,7 +102,7 @@ export default function Rekapitulasi() {
 
         <div className="flex items-center gap-3">
           <span className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/3 dark:hover:text-gray-200">
-            3/{counts} Final
+            {finalBukti()}/{counts} Final
           </span>
         </div>
       </div>
@@ -145,14 +161,28 @@ export default function Rekapitulasi() {
                 <TableCell className="py-3 text-theme-sm text-gray-500 dark:text-gray-400">
                   {totalSuaraTps(data.id)}
                 </TableCell>
-                {/* <TableCell className="py-3 text-theme-sm text-gray-500 dark:text-gray-400">
-                  <Badge
-                    size="sm"
-                    color={data.im === "selesai" ? "success" : "error"}
-                  >
-                    {data.bukti}
-                  </Badge>
-                </TableCell> */}
+                <TableCell className="py-3">
+                  {(() => {
+                    const hasil = hasilTps.find(
+                      (item) => item.tpsId === data.id,
+                    );
+                    const status = hasil?.status ?? "BELUM ADA";
+
+                    return (
+                      <span
+                        className={`rounded-md px-2 py-1 text-xs font-medium ${
+                          status === "TERVERIFIKASI"
+                            ? "bg-green-100 text-green-700"
+                            : status === "DITOLAK"
+                              ? "bg-red-100 text-red-700"
+                              : "bg-amber-100 text-amber-700"
+                        }`}
+                      >
+                        {status}
+                      </span>
+                    );
+                  })()}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
