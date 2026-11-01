@@ -8,7 +8,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useSidebar } from "../context/SidebarContext";
 import {
   BoxCubeIcon,
-  CalenderIcon,
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
@@ -43,19 +42,14 @@ const navItems: NavItem[] = [
     path: "/",
   },
   {
-    icon: <CalenderIcon />,
-    key: "calendar",
-    path: "/calendar",
+    key: "forms",
+    icon: <ListIcon />,
+    path: "/data-kades",
   },
   {
     icon: <UserCircleIcon />,
     key: "userProfile",
     path: "/profile",
-  },
-  {
-    key: "forms",
-    icon: <ListIcon />,
-    subItems: [{ key: "formElements", path: "/form-elements", pro: false }],
   },
   {
     key: "tables",

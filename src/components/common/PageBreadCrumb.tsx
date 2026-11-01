@@ -18,9 +18,9 @@ const PageBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle }) => {
           <li>
             <Link
               className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400"
-              href="/"
+              href="/data-kades"
             >
-              Home
+              Back
               <svg
                 className="stroke-current rtl:rotate-180"
                 width="17"

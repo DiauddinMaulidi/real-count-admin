@@ -51,7 +51,7 @@
       "task": "Task",
       "taskList": "List",
       "kanban": "Kanban",
-      "forms": "Forms",
+      "forms": "Data Calon Kades",
       "formElements": "Form Elements",
       "formLayout": "Form Layout",
       "tables": "Tables",
@@ -862,5 +862,3 @@
     }
   }
 }
-
-

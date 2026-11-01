@@ -12,15 +12,14 @@ import ToggleSwitch from "@/components/form/form-elements/ToggleSwitch";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Next.js Form Elements | TailAdmin - Next.js Dashboard Template",
-  description:
-    "This is Next.js Form Elements page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
+  title: "Real Count",
+  description: "Sistem Hitung Suara Real-time",
 };
 
-export default function FormElements() {
+export default function FormCalon() {
   return (
     <div>
-      <PageBreadcrumb pageTitle="Form Elements" />
+      <PageBreadcrumb pageTitle="Data Calon Kades" />
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <div className="space-y-6">
           <DefaultInputs />

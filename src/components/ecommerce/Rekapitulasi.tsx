@@ -107,7 +107,7 @@ export default function Rekapitulasi() {
         </div>
       </div>
       <div className="max-w-full overflow-x-auto">
-        <Table>
+        <Table className="w-full table-fixed">
           {/* Table Header */}
           <TableHeader className="border-y border-gray-100 dark:border-gray-800">
             <TableRow>
