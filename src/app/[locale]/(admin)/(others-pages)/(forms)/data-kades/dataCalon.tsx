@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardDescription,
@@ -5,33 +7,84 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+
+interface DetailSuara {
+  id: number;
+  jumlahSuara: number;
+}
+
+interface Calon {
+  id: number;
+  namaCalon: string;
+  nomorUrut: string;
+  foto: string;
+  detailSuara: DetailSuara[];
+}
 
 export function CardImage() {
+  const [calonKades, setCalonKades] = useState<Calon[]>([]);
+
+  useEffect(() => {
+    async function fetchCalon() {
+      try {
+        const resKades = await fetch("/api/calon");
+
+        if (!resKades.ok) {
+          throw new Error("Gagal mengambil data calon");
+        }
+
+        const dataKades = await resKades.json();
+        setCalonKades(dataKades);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    fetchCalon();
+  }, []);
+
   return (
-    <Card className="relative my-5 w-full max-w-xs border-2 border-blue-700 bg-white p-3 shadow-xl transition duration-300 hover:scale-105 dark:border-white dark:bg-blue-700">
-      <div className="mt-3 font-bold text-blue-950 dark:text-white">
-        <span className="rounded-lg bg-blue-400 p-3 dark:bg-green-700">01</span>
-      </div>
-      <div className="flex">
-        <div>
-          <Image
-            src="/uploads/calon/me.JPG"
-            alt="Event cover"
-            className="border-2 border-red-600"
-            width={100}
-            height={100}
-          />
-        </div>
-        <CardHeader className="w-full pt-0 text-blue-950 dark:text-white">
-          <CardTitle className="rounded-lg bg-blue-400 p-1 dark:bg-green-700">
-            MOH. DIAUUDIN MAULIDI
-          </CardTitle>
-          <CardTitle>Perolehan Suara</CardTitle>
-          <CardDescription className="text-4xl font-semibold">
-            500 <span className="text-2xl font-normal">Suara</span>
-          </CardDescription>
-        </CardHeader>
-      </div>
-    </Card>
+    <div className="grid grid-cols-3">
+      {calonKades.map((kades) => {
+        const totalSuara = kades.detailSuara.reduce(
+          (total, item) => total + item.jumlahSuara,
+          0,
+        );
+        return (
+          <Card
+            key={kades.id}
+            className="relative my-5 w-full max-w-xs border-2 border-blue-700 bg-white p-3 shadow-xl transition duration-300 hover:scale-105 dark:border-white dark:bg-blue-700"
+          >
+            <div className="mt-3 font-bold text-blue-950 dark:text-white">
+              <span className="rounded-lg bg-blue-400 p-3 dark:bg-green-700">
+                0{kades.nomorUrut}
+              </span>
+            </div>
+            <div className="flex">
+              <div>
+                <Image
+                  src={kades.foto}
+                  alt="Event cover"
+                  className="border-2 border-red-600"
+                  width={100}
+                  height={100}
+                />
+              </div>
+              <CardHeader className="w-full pt-0 text-blue-950 dark:text-white">
+                <CardTitle className="rounded-lg bg-blue-400 p-1 dark:bg-green-700">
+                  {kades.namaCalon}
+                </CardTitle>
+                <CardTitle>Perolehan Suara</CardTitle>
+                <CardDescription className="text-4xl font-semibold">
+                  {totalSuara}{" "}
+                  <span className="text-2xl font-normal">Suara</span>
+                </CardDescription>
+              </CardHeader>
+            </div>
+          </Card>
+        );
+      })}
+    </div>
   );
 }
