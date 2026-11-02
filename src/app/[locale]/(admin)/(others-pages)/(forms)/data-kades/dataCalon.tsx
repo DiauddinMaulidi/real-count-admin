@@ -45,7 +45,7 @@ export function CardImage() {
   }, []);
 
   return (
-    <div className="grid grid-cols-3">
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2">
       {calonKades.map((kades) => {
         const totalSuara = kades.detailSuara.reduce(
           (total, item) => total + item.jumlahSuara,
