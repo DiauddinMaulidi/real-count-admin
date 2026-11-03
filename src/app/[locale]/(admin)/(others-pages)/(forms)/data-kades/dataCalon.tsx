@@ -1,12 +1,15 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Pen, Trash } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface DetailSuara {
@@ -45,7 +48,7 @@ export function CardImage() {
   }, []);
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2">
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-2">
       {calonKades.map((kades) => {
         const totalSuara = kades.detailSuara.reduce(
           (total, item) => total + item.jumlahSuara,
@@ -54,7 +57,7 @@ export function CardImage() {
         return (
           <Card
             key={kades.id}
-            className="relative my-5 w-full max-w-xs border-2 border-blue-700 bg-white p-3 shadow-xl transition duration-300 hover:scale-105 dark:border-white dark:bg-blue-700"
+            className="group relative my-5 w-full max-w-xs border-2 border-blue-700 bg-white p-3 shadow-xl transition duration-300 hover:scale-105 dark:border-white dark:bg-blue-700"
           >
             <div className="mt-3 font-bold text-blue-950 dark:text-white">
               <span className="rounded-lg bg-blue-400 p-3 dark:bg-green-700">
@@ -81,6 +84,19 @@ export function CardImage() {
                   <span className="text-2xl font-normal">Suara</span>
                 </CardDescription>
               </CardHeader>
+            </div>
+
+            <div className="absolute inset-0 bg-black/30 p-6 opacity-0 group-hover:opacity-100">
+              <div className="flex h-full items-center justify-center gap-3">
+                <Button className="bg-white text-center text-lg font-semibold text-red-500">
+                  <Trash />
+                </Button>
+                <Link href="data-kades/edit">
+                  <Button className="bg-white text-center text-lg font-semibold text-green-500">
+                    <Pen />
+                  </Button>
+                </Link>
+              </div>
             </div>
           </Card>
         );

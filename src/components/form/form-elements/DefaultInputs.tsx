@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import ComponentCard from "../../common/ComponentCard";
 import Input from "../input/InputField";
 import Label from "../Label";
@@ -9,6 +9,7 @@ import { EyeIcon, TrashBinIcon, UploadIcon } from "@/icons";
 import Image from "next/image";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
+import { ImageIcon } from "lucide-react";
 
 interface FileWithPreview extends File {
   preview?: string;
@@ -20,6 +21,13 @@ export default function DefaultInputs() {
     null,
   );
   const { isOpen, openModal, closeModal } = useModal();
+
+  const [form, setForm] = useState({
+    nama: "",
+    nomorUrut: "",
+  });
+  const [foto, setFoto] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const filesRef = useRef<FileWithPreview[]>(files);
   useEffect(() => {
@@ -37,6 +45,10 @@ export default function DefaultInputs() {
         }),
       ),
     ]);
+
+    if (acceptedFiles.length > 0) {
+      setFoto(acceptedFiles[0]);
+    }
   }, []);
 
   const removeFile = (fileName: string) => {
@@ -59,9 +71,6 @@ export default function DefaultInputs() {
     setPreviewImage(null);
   };
 
-  // Revoke all object URLs only when the component unmounts to prevent memory leaks.
-  // Using an empty dependency array ensures cleanup does NOT run after every drop,
-  // which would revoke URLs immediately and break the preview images.
   useEffect(() => {
     return () => {
       filesRef.current.forEach((file) => {
@@ -104,16 +113,71 @@ export default function DefaultInputs() {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    setLoading(true);
+
+    try {
+      const formData = new FormData();
+
+      formData.append("namaCalon", form.nama);
+      formData.append("nomorUrut", form.nomorUrut);
+
+      if (foto) {
+        formData.append("foto", foto);
+      }
+
+      const res = await fetch("/api/calon", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        throw new Error(result.message);
+      }
+
+      alert("Data berhasil disimpan!");
+
+      setForm({
+        nama: "",
+        nomorUrut: "",
+      });
+
+      setFoto(null);
+    } catch (error) {
+      console.error(error);
+      alert(error instanceof Error ? error.message : "Gagal menyimpan data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <ComponentCard title="">
-      <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <Label htmlFor="test">Nomor Urut</Label>
-          <Input type="number" id="test" placeholder="Nomor urut berapa?" />
+          <Input
+            type="number"
+            value={form.nomorUrut}
+            onChange={(e) => setForm({ ...form, nomorUrut: e.target.value })}
+            id="test"
+            required
+            placeholder="Buat tanpa angka 0 didepan"
+          />
         </div>
         <div>
           <Label>Nama Calon Kades</Label>
-          <Input type="text" placeholder="Alexander Graham" />
+          <Input
+            type="text"
+            value={form.nama}
+            onChange={(e) => setForm({ ...form, nama: e.target.value })}
+            required
+            placeholder="Ex. Alexander Graham"
+          />
         </div>
 
         <div
@@ -137,14 +201,18 @@ export default function DefaultInputs() {
                   ? "Drop images here"
                   : isDragActive
                     ? "Drop files here"
-                    : "Drag & Drop Files Here"}
+                    : foto
+                      ? "Foto berhasil dipilih"
+                      : "Drag & Drop Files Here"}
             </h4>
 
             {/* Helper Text */}
             <p className="mb-4 max-w-72.5 text-sm text-gray-600 dark:text-gray-400">
               {isDragReject
                 ? "Only PNG, JPG, WebP, and SVG images up to 5MB are allowed"
-                : "Drag and drop your PNG, JPG, WebP, SVG images here or browse"}
+                : foto
+                  ? foto.name
+                  : "Drag and drop your PNG, JPG, WebP, SVG images here or browse"}
             </p>
 
             {/* Action Prompt */}
@@ -154,129 +222,32 @@ export default function DefaultInputs() {
           </div>
         </div>
 
-        {files.length > 0 && (
-          <div className="mt-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <h5 className="text-theme-sm font-medium text-gray-700 dark:text-gray-300">
-                Uploaded Images ({files.length})
-              </h5>
-              <button
-                type="button"
-                onClick={() => {
-                  files.forEach((f) => {
-                    if (f.preview) URL.revokeObjectURL(f.preview);
-                  });
-                  setFiles([]);
-                }}
-                className="text-theme-xs font-medium text-error-500 hover:text-error-600 dark:text-error-400"
-              >
-                Clear all
-              </button>
+        {foto && (
+          <div className="mt-3 flex items-center justify-between rounded-lg border p-3">
+            <div className="flex items-center gap-2">
+              <ImageIcon className="size-5" />
+              <span className="text-sm">{foto.name}</span>
             </div>
-
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {files.map((file) => (
-                <div
-                  key={`${file.name}-${file.lastModified}`}
-                  className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-theme-xs transition hover:shadow-theme-sm dark:border-gray-800 dark:bg-gray-900"
-                >
-                  {/* Image Preview Container */}
-                  <div className="relative aspect-4/3 w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
-                    {file.preview ? (
-                      <Image
-                        src={file.preview}
-                        alt={file.name}
-                        fill
-                        unoptimized
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center text-gray-400">
-                        <UploadIcon className="size-8" />
-                      </div>
-                    )}
-
-                    {/* Hover Action Overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center gap-2 bg-gray-900/60 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                      {file.preview && (
-                        <button
-                          type="button"
-                          onClick={() => handleOpenPreview(file)}
-                          className="flex size-8 items-center justify-center rounded-full bg-white/90 text-gray-800 backdrop-blur-xs transition hover:bg-white dark:bg-gray-800/90 dark:text-white dark:hover:bg-gray-800"
-                          title="Preview image"
-                          aria-label={`Preview ${file.name}`}
-                        >
-                          <EyeIcon className="size-4" />
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => removeFile(file.name)}
-                        className="flex size-8 items-center justify-center rounded-full bg-white/90 text-error-500 backdrop-blur-xs transition hover:bg-white dark:bg-gray-800/90 dark:text-error-400 dark:hover:bg-gray-800"
-                        title="Remove image"
-                        aria-label={`Remove ${file.name}`}
-                      >
-                        <TrashBinIcon className="size-4" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* File Metadata */}
-                  <div className="p-3">
-                    <p
-                      className="truncate text-theme-xs font-medium text-gray-800 dark:text-white/90"
-                      title={file.name}
-                    >
-                      {file.name}
-                    </p>
-                    <p className="mt-0.5 text-[11px] text-gray-500 dark:text-gray-400">
-                      {formatFileSize(file.size)}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <button
+              type="button"
+              onClick={() => setFoto(null)}
+              className="text-sm text-red-500"
+            >
+              Hapus
+            </button>
           </div>
         )}
 
-        {/* Full Image Preview Modal */}
-        <Modal
-          isOpen={isOpen}
-          onClose={handleClosePreview}
-          className="max-w-2xl p-6 sm:p-8"
-        >
-          {previewImage && (
-            <div>
-              <div className="mb-4">
-                <h4 className="text-theme-lg font-semibold text-gray-800 dark:text-white/90">
-                  Image Preview
-                </h4>
-                <p className="text-theme-xs text-gray-500 dark:text-gray-400">
-                  {previewImage.name} • {formatFileSize(previewImage.size)}
-                </p>
-              </div>
-
-              <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-gray-800">
-                {previewImage.preview && (
-                  <Image
-                    src={previewImage.preview}
-                    alt={previewImage.name}
-                    fill
-                    unoptimized
-                    className="object-contain"
-                  />
-                )}
-              </div>
-            </div>
-          )}
-        </Modal>
-
         <div className="flex justify-end">
-          <Button className="bg-blue-100 text-blue-700 dark:bg-green-100 dark:text-green-700">
-            <span>Submit</span>
+          <Button
+            type="submit"
+            disabled={loading}
+            className="bg-blue-100 text-blue-700 dark:bg-green-100 dark:text-green-700"
+          >
+            <span>{loading ? "Menyimpan..." : "Submit"}</span>
           </Button>
         </div>
-      </div>
+      </form>
     </ComponentCard>
   );
 }
