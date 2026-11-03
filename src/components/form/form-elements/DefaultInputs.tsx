@@ -3,13 +3,10 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import ComponentCard from "../../common/ComponentCard";
 import Input from "../input/InputField";
 import Label from "../Label";
-import { useModal } from "@/hooks/useModal";
 import { useDropzone } from "react-dropzone";
-import { EyeIcon, TrashBinIcon, UploadIcon } from "@/icons";
-import Image from "next/image";
-import { Modal } from "@/components/ui/modal";
-import { Button } from "@/components/ui/button";
+import { UploadIcon } from "@/icons";
 import { ImageIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface FileWithPreview extends File {
   preview?: string;
@@ -17,10 +14,6 @@ interface FileWithPreview extends File {
 
 export default function DefaultInputs() {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
-  const [previewImage, setPreviewImage] = useState<FileWithPreview | null>(
-    null,
-  );
-  const { isOpen, openModal, closeModal } = useModal();
 
   const [form, setForm] = useState({
     nama: "",
@@ -50,26 +43,6 @@ export default function DefaultInputs() {
       setFoto(acceptedFiles[0]);
     }
   }, []);
-
-  const removeFile = (fileName: string) => {
-    setFiles((prevFiles) => {
-      const target = prevFiles.find((f) => f.name === fileName);
-      if (target?.preview) {
-        URL.revokeObjectURL(target.preview);
-      }
-      return prevFiles.filter((f) => f.name !== fileName);
-    });
-  };
-
-  const handleOpenPreview = (file: FileWithPreview) => {
-    setPreviewImage(file);
-    openModal();
-  };
-
-  const handleClosePreview = () => {
-    closeModal();
-    setPreviewImage(null);
-  };
 
   useEffect(() => {
     return () => {
@@ -105,12 +78,6 @@ export default function DefaultInputs() {
     if (isFocused)
       return "border-brand-500 ring-2 ring-brand-500/20 bg-gray-50 dark:bg-gray-900";
     return "border-gray-300 bg-gray-50 hover:border-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:hover:border-brand-500";
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
