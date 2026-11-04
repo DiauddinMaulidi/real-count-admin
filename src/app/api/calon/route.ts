@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { randomBytes, randomUUID } from "crypto";
+import { randomUUID } from "crypto";
 import { mkdir, writeFile } from "fs/promises";
 import { NextResponse } from "next/server";
 import path from "path";

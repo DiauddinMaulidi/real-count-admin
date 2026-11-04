@@ -27,6 +27,8 @@ interface Calon {
 
 export function CardImage() {
   const [calonKades, setCalonKades] = useState<Calon[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchCalon() {
@@ -40,12 +42,43 @@ export function CardImage() {
         const dataKades = await resKades.json();
         setCalonKades(dataKades);
       } catch (error) {
-        console.log(error);
+        console.error(error);
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchCalon();
   }, []);
+
+  const handleDelete = async (id: number) => {
+    const konfirmasi = window.confirm(
+      "Apakah kamu yakin ingin menghapus calon ini?",
+    );
+
+    if (!konfirmasi) return;
+
+    try {
+      setDeletingId(id);
+      const res = await fetch(`/api/calon/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        throw new Error("Gagal menghapus data calon");
+      }
+      setCalonKades((prev) => prev.filter((kades) => kades.id !== id));
+    } catch (error) {
+      console.error("Gagal menghapus data calon", error);
+      alert("Gagal menghapus data calon");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  if (loading) {
+    return <p>Memuat data calon...</p>;
+  }
 
   return (
     <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-2">
@@ -88,10 +121,15 @@ export function CardImage() {
 
             <div className="absolute inset-0 bg-black/30 p-6 opacity-0 group-hover:opacity-100">
               <div className="flex h-full items-center justify-center gap-3">
-                <Button className="bg-white text-center text-lg font-semibold text-red-500">
+                <Button
+                  type="button"
+                  onClick={() => handleDelete(kades.id)}
+                  disabled={deletingId === kades.id}
+                  className="bg-white text-center text-lg font-semibold text-red-500"
+                >
                   <Trash />
                 </Button>
-                <Link href="data-kades/edit">
+                <Link href={`data-kades/form-edit/${kades.id}`}>
                   <Button className="bg-white text-center text-lg font-semibold text-green-500">
                     <Pen />
                   </Button>
