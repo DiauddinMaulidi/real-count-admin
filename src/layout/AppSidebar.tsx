@@ -7,18 +7,14 @@ import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSidebar } from "../context/SidebarContext";
 import {
-  BoxCubeIcon,
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
   ListIcon,
-  PageIcon,
-  PieChartIcon,
   PlugInIcon,
   TableIcon,
   UserCircleIcon,
 } from "../icons/index";
-import SidebarWidget from "./SidebarWidget";
 
 type NavItem = {
   key: string;
@@ -47,46 +43,18 @@ const navItems: NavItem[] = [
     path: "/data-kades",
   },
   {
+    key: "tables",
+    icon: <TableIcon />,
+    path: "/petugas-tps",
+  },
+  {
     icon: <UserCircleIcon />,
     key: "userProfile",
     path: "/profile",
   },
-  {
-    key: "tables",
-    icon: <TableIcon />,
-    subItems: [{ key: "basicTables", path: "/basic-tables", pro: false }],
-  },
-  {
-    key: "pages",
-    icon: <PageIcon />,
-    subItems: [
-      { key: "blankPage", path: "/blank" },
-      { key: "error404", path: "/error-404" },
-    ],
-  },
 ];
 
 const othersItems: NavItem[] = [
-  {
-    icon: <PieChartIcon />,
-    key: "charts",
-    subItems: [
-      { key: "lineChart", path: "/line-chart", pro: false },
-      { key: "barChart", path: "/bar-chart", pro: false },
-    ],
-  },
-  {
-    icon: <BoxCubeIcon />,
-    key: "uiElements",
-    subItems: [
-      { key: "alerts", path: "/alerts" },
-      { key: "avatar", path: "/avatars" },
-      { key: "badge", path: "/badge" },
-      { key: "buttons", path: "/buttons" },
-      { key: "images", path: "/images" },
-      { key: "videos", path: "/videos" },
-    ],
-  },
   {
     icon: <PlugInIcon />,
     key: "authentication",
@@ -407,7 +375,6 @@ const AppSidebar: React.FC = () => {
             </div>
           </div>
         </nav>
-        {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}
       </div>
     </aside>
   );

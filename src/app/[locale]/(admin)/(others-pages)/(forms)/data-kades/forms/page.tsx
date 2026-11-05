@@ -1,5 +1,5 @@
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import DefaultInputs from "@/components/form/form-elements/DefaultInputs";
+import FormsPetugas from "@/components/form/form-elements/FormsPetugas";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -10,22 +10,11 @@ export const metadata: Metadata = {
 export default function FormCalon() {
   return (
     <div>
-      <PageBreadcrumb pageTitle="Data Calon Kades" />
+      <PageBreadcrumb pageTitle="Data Calon Kades" tujuan="/data-kades" />
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <div className="space-y-6">
-          <DefaultInputs />
-          {/* <SelectInputs /> */}
-          {/* <TextAreaInput /> */}
-          {/* <InputStates /> */}
+          <FormsPetugas />
         </div>
-        {/* <div className="space-y-6">
-          <InputGroup />
-          <FileInputExample />
-          <CheckboxComponents />
-          <RadioButtons />
-          <ToggleSwitch />
-          <DropzoneComponent />
-        </div> */}
       </div>
     </div>
   );

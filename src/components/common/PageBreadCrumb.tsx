@@ -2,9 +2,10 @@ import { Link } from "@/i18n/navigation";
 
 interface BreadcrumbProps {
   pageTitle: string;
+  tujuan: string;
 }
 
-const PageBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle }) => {
+const PageBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle, tujuan }) => {
   return (
     <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
       <h2
@@ -18,7 +19,7 @@ const PageBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle }) => {
           <li>
             <Link
               className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400"
-              href="/data-kades"
+              href={`${tujuan}`}
             >
               Back
               <svg

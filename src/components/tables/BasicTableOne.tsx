@@ -1,5 +1,4 @@
-import Image from "next/image";
-import Badge from "../ui/badge/Badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -7,105 +6,32 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import { Pen, Trash } from "lucide-react";
+import Link from "next/link";
 
 interface Order {
   id: number;
-  user: {
-    image: string;
-    name: string;
-    role: string;
-  };
-  projectName: string;
-  team: {
-    images: string[];
-  };
-  status: string;
-  budget: string;
+  namaPetugas: string;
+  wilayah: string;
+  tps: string;
+  jumlahPemilih: number;
 }
 
 // Define the table data using the interface
 const tableData: Order[] = [
   {
     id: 1,
-    user: {
-      image: "/images/user/user-17.jpg",
-      name: "Lindsey Curtis",
-      role: "Web Designer",
-    },
-    projectName: "Agency Website",
-    team: {
-      images: [
-        "/images/user/user-22.jpg",
-        "/images/user/user-23.jpg",
-        "/images/user/user-24.jpg",
-      ],
-    },
-    budget: "3.9K",
-    status: "Active",
+    namaPetugas: "Lindsey Curtis",
+    wilayah: "Dusun 1",
+    tps: "TPS 01",
+    jumlahPemilih: 200,
   },
   {
     id: 2,
-    user: {
-      image: "/images/user/user-18.jpg",
-      name: "Kaiya George",
-      role: "Project Manager",
-    },
-    projectName: "Technology",
-    team: {
-      images: ["/images/user/user-25.jpg", "/images/user/user-26.jpg"],
-    },
-    budget: "24.9K",
-    status: "Pending",
-  },
-  {
-    id: 3,
-    user: {
-      image: "/images/user/user-17.jpg",
-      name: "Zain Geidt",
-      role: "Content Writing",
-    },
-    projectName: "Blog Writing",
-    team: {
-      images: ["/images/user/user-27.jpg"],
-    },
-    budget: "12.7K",
-    status: "Active",
-  },
-  {
-    id: 4,
-    user: {
-      image: "/images/user/user-20.jpg",
-      name: "Abram Schleifer",
-      role: "Digital Marketer",
-    },
-    projectName: "Social Media",
-    team: {
-      images: [
-        "/images/user/user-28.jpg",
-        "/images/user/user-29.jpg",
-        "/images/user/user-30.jpg",
-      ],
-    },
-    budget: "2.8K",
-    status: "Cancel",
-  },
-  {
-    id: 5,
-    user: {
-      image: "/images/user/user-21.jpg",
-      name: "Carla George",
-      role: "Front-end Developer",
-    },
-    projectName: "Website",
-    team: {
-      images: [
-        "/images/user/user-31.jpg",
-        "/images/user/user-32.jpg",
-        "/images/user/user-33.jpg",
-      ],
-    },
-    budget: "4.5K",
-    status: "Active",
+    namaPetugas: "amet suremet",
+    wilayah: "Dusun 2",
+    tps: "TPS 02",
+    jumlahPemilih: 150,
   },
 ];
 
@@ -121,96 +47,73 @@ export default function BasicTableOne() {
                 isHeader
                 className="px-5 py-3 text-start text-theme-xs font-medium text-gray-500 dark:text-gray-400"
               >
+                No
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 text-start text-theme-xs font-medium text-gray-500 dark:text-gray-400"
+              >
                 User
               </TableCell>
               <TableCell
                 isHeader
                 className="px-5 py-3 text-start text-theme-xs font-medium text-gray-500 dark:text-gray-400"
               >
-                Project Name
+                TPS
+              </TableCell>
+
+              <TableCell
+                isHeader
+                className="px-5 py-3 text-start text-theme-xs font-medium text-gray-500 dark:text-gray-400"
+              >
+                DPT
               </TableCell>
               <TableCell
                 isHeader
                 className="px-5 py-3 text-start text-theme-xs font-medium text-gray-500 dark:text-gray-400"
               >
-                Team
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 text-start text-theme-xs font-medium text-gray-500 dark:text-gray-400"
-              >
-                Status
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 text-start text-theme-xs font-medium text-gray-500 dark:text-gray-400"
-              >
-                Budget
+                Aksi
               </TableCell>
             </TableRow>
           </TableHeader>
 
           {/* Table Body */}
           <TableBody className="divide-y divide-gray-100 dark:divide-white/5">
-            {tableData.map((order) => (
+            {tableData.map((order, index) => (
               <TableRow key={order.id}>
+                <TableCell className="px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400">
+                  {index + 1}
+                </TableCell>
                 <TableCell className="px-5 py-4 text-start sm:px-6">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 overflow-hidden rounded-full">
-                      <Image
-                        width={40}
-                        height={40}
-                        src={order.user.image}
-                        alt={order.user.name}
-                      />
-                    </div>
                     <div>
                       <span className="block text-theme-sm font-medium text-gray-800 dark:text-white/90">
-                        {order.user.name}
+                        {order.namaPetugas}
                       </span>
                       <span className="block text-theme-xs text-gray-500 dark:text-gray-400">
-                        {order.user.role}
+                        {order.wilayah}
                       </span>
                     </div>
                   </div>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400">
-                  {order.projectName}
+                  {order.tps}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400">
-                  <div className="flex -space-x-2">
-                    {order.team.images.map((teamImage, index) => (
-                      <div
-                        key={index}
-                        className="h-6 w-6 overflow-hidden rounded-full border-2 border-white dark:border-gray-900"
-                      >
-                        <Image
-                          width={24}
-                          height={24}
-                          src={teamImage}
-                          alt={`Team member ${index + 1}`}
-                          className="w-full"
-                        />
-                      </div>
-                    ))}
-                  </div>
+                  {order.jumlahPemilih}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400">
-                  <Badge
-                    size="sm"
-                    color={
-                      order.status === "Active"
-                        ? "success"
-                        : order.status === "Pending"
-                          ? "warning"
-                          : "error"
-                    }
+                  <Button
+                    type="button"
+                    className="bg-white text-center text-lg font-semibold text-red-500"
                   >
-                    {order.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="px-4 py-3 text-theme-sm text-gray-500 dark:text-gray-400">
-                  {order.budget}
+                    <Trash />
+                  </Button>
+                  <Link href={`petugas/edit/${order.id}`}>
+                    <Button className="bg-white text-center text-lg font-semibold text-green-500">
+                      <Pen />
+                    </Button>
+                  </Link>
                 </TableCell>
               </TableRow>
             ))}
