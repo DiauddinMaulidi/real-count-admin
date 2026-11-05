@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import path from "path";
 import { mkdir, unlink, writeFile } from "fs/promises";
 import { randomUUID } from "crypto";
+export const runtime = "nodejs";
 
 // GET data berdasarkan ID
 export async function GET(
@@ -116,8 +117,6 @@ export async function DELETE(
     );
   }
 }
-
-export const runtime = "nodejs";
 
 export async function PATCH(
   request: Request,

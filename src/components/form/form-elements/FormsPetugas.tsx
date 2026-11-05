@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button";
 export default function FormsPetugas() {
   const [form, setForm] = useState({
     nama: "",
-    nomorUrut: "",
+    wilayah: "",
+    jumlahPemilih: "",
+    namaSaksi: "",
   });
-  const [foto, setFoto] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,14 +22,12 @@ export default function FormsPetugas() {
     try {
       const formData = new FormData();
 
-      formData.append("namaCalon", form.nama);
-      formData.append("nomorUrut", form.nomorUrut);
+      formData.append("namaTps", form.nama);
+      formData.append("wilayah", form.wilayah);
+      formData.append("jumlahPemilih", form.jumlahPemilih);
+      formData.append("namaSaksi", form.namaSaksi);
 
-      if (foto) {
-        formData.append("foto", foto);
-      }
-
-      const res = await fetch("/api/calon", {
+      const res = await fetch("/api/petugas", {
         method: "POST",
         body: formData,
       });
@@ -43,10 +42,10 @@ export default function FormsPetugas() {
 
       setForm({
         nama: "",
-        nomorUrut: "",
+        wilayah: "",
+        jumlahPemilih: "",
+        namaSaksi: "",
       });
-
-      setFoto(null);
     } catch (error) {
       console.error(error);
       alert(error instanceof Error ? error.message : "Gagal menyimpan data");
@@ -62,42 +61,44 @@ export default function FormsPetugas() {
           <Label htmlFor="test">Nama Petugas</Label>
           <Input
             type="text"
-            value={form.nomorUrut}
-            onChange={(e) => setForm({ ...form, nomorUrut: e.target.value })}
+            value={form.namaSaksi}
+            onChange={(e) => setForm({ ...form, namaSaksi: e.target.value })}
             id="test"
             required
-            placeholder="Buat tanpa angka 0 didepan"
+            placeholder="Aq. Ali"
           />
         </div>
         <div>
           <Label htmlFor="test">Nama TPS</Label>
           <Input
-            type="number"
-            value={form.nomorUrut}
-            onChange={(e) => setForm({ ...form, nomorUrut: e.target.value })}
+            type="text"
+            value={form.nama}
+            onChange={(e) => setForm({ ...form, nama: e.target.value })}
             id="test"
             required
-            placeholder="Buat tanpa angka 0 didepan"
+            placeholder="TPS 01"
           />
         </div>
         <div>
           <Label>Wilayah</Label>
           <Input
             type="text"
-            value={form.nama}
-            onChange={(e) => setForm({ ...form, nama: e.target.value })}
+            value={form.wilayah}
+            onChange={(e) => setForm({ ...form, wilayah: e.target.value })}
             required
-            placeholder="Ex. Alexander Graham"
+            placeholder="Dusun 1"
           />
         </div>
         <div>
           <Label>Jumlah Pemilih</Label>
           <Input
-            type="text"
-            value={form.nama}
-            onChange={(e) => setForm({ ...form, nama: e.target.value })}
+            type="number"
+            value={form.jumlahPemilih}
+            onChange={(e) =>
+              setForm({ ...form, jumlahPemilih: e.target.value })
+            }
             required
-            placeholder="Ex. Alexander Graham"
+            placeholder="200"
           />
         </div>
 
