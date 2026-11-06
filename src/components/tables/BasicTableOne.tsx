@@ -17,6 +17,11 @@ interface Petugas {
   namaSaksi: string;
   wilayah: string;
   jumlahPemilih: number;
+  user: {
+    username: string;
+    password: string;
+    role: string;
+  };
 }
 
 export default function BasicTableOne() {
@@ -91,6 +96,12 @@ export default function BasicTableOne() {
                 isHeader
                 className="px-5 py-3 text-start text-theme-xs font-medium text-gray-500 dark:text-gray-400"
               >
+                Username
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 text-start text-theme-xs font-medium text-gray-500 dark:text-gray-400"
+              >
                 TPS
               </TableCell>
 
@@ -131,6 +142,9 @@ export default function BasicTableOne() {
                 <TableCell className="px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400">
                   {petugas.namaTps}
                 </TableCell>
+                {/* <TableCell className="px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400">
+                  {petugas.user.username}
+                </TableCell> */}
                 <TableCell className="px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400">
                   {petugas.jumlahPemilih}
                 </TableCell>

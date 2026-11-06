@@ -27,7 +27,7 @@ export default function FormsPetugas() {
       formData.append("jumlahPemilih", form.jumlahPemilih);
       formData.append("namaSaksi", form.namaSaksi);
 
-      const res = await fetch("/api/petugas", {
+      const res = await fetch("/api/tps", {
         method: "POST",
         body: formData,
       });
