@@ -143,7 +143,7 @@ export default function BasicTableOne() {
                   >
                     <Trash />
                   </Button>
-                  <Link href={`petugas-tps/edit/${petugas.id}`}>
+                  <Link href={`petugas-tps/forms-edit/${petugas.id}`}>
                     <Button className="bg-white text-center text-lg font-semibold text-green-500">
                       <Pen />
                     </Button>
