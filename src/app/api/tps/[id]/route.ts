@@ -22,6 +22,14 @@ export async function GET(req: Request, { params }: RouteParams) {
       where: {
         id: tpsId,
       },
+      include: {
+        petugas: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+      },
     });
 
     if (!getData) {
@@ -88,73 +96,75 @@ export async function DELETE(req: Request, { params }: RouteParams) {
 }
 
 // PATCH update data TPS
-export async function PATCH(request: Request, { params }: RouteParams) {
+export async function PATCH(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
   try {
     const { id } = await params;
     const tpsId = Number(id);
 
-    if (!Number.isInteger(tpsId) || tpsId <= 0) {
-      return NextResponse.json(
-        { message: "ID TPS tidak valid" },
-        { status: 400 },
-      );
-    }
+    const body = await req.json();
 
-    // Membaca JSON
-    const body = await request.json();
+    const data = await prisma.$transaction(async (tx) => {
+      const tps = await tx.tps.findUnique({
+        where: { id: tpsId },
+        include: { petugas: true },
+      });
 
-    const { namaTps, wilayah, namaSaksi, jumlahPemilih } = body;
+      if (!tps) {
+        throw new Error("TPS tidak ditemukan");
+      }
 
-    // Validasi input
-    if (
-      typeof namaTps !== "string" ||
-      typeof wilayah !== "string" ||
-      typeof namaSaksi !== "string" ||
-      !namaTps.trim() ||
-      !wilayah.trim() ||
-      !namaSaksi.trim() ||
-      !Number.isInteger(Number(jumlahPemilih)) ||
-      Number(jumlahPemilih) < 0
-    ) {
-      return NextResponse.json(
-        { message: "Data TPS tidak valid atau belum lengkap" },
-        { status: 400 },
-      );
-    }
+      // Update data TPS
+      await tx.tps.update({
+        where: { id: tpsId },
+        data: {
+          namaTps: body.namaTps,
+          wilayah: body.wilayah || null,
+          namaSaksi: body.namaSaksi || null,
+          jumlahPemilih: Number(body.jumlahPemilih),
+        },
+      });
 
-    // Cek data TPS
-    const tpsLama = await prisma.tps.findUnique({
-      where: { id: tpsId },
-    });
+      // Update username petugas jika tersedia
+      if (body.petugas?.username && tps.petugas) {
+        await tx.user.update({
+          where: {
+            id: tps.petugas.id,
+          },
+          data: {
+            username: body.petugas.username,
+          },
+        });
+      }
 
-    if (!tpsLama) {
-      return NextResponse.json(
-        { message: "Data TPS tidak ditemukan" },
-        { status: 404 },
-      );
-    }
-
-    // Update database
-    const updated = await prisma.tps.update({
-      where: { id: tpsId },
-      data: {
-        namaTps: namaTps.trim(),
-        wilayah: wilayah.trim(),
-        namaSaksi: namaSaksi.trim(),
-        jumlahPemilih: Number(jumlahPemilih),
-      },
+      return tx.tps.findUnique({
+        where: { id: tpsId },
+        include: {
+          petugas: {
+            select: {
+              id: true,
+              username: true,
+            },
+          },
+        },
+      });
     });
 
     return NextResponse.json({
       success: true,
-      message: "Data TPS berhasil diperbarui",
-      data: updated,
+      message: "Data berhasil diperbarui",
+      data,
     });
   } catch (error) {
-    console.error("ERROR PATCH TPS:", error);
+    console.error("Update TPS:", error);
 
     return NextResponse.json(
-      { message: "Gagal memperbarui data TPS" },
+      {
+        message:
+          error instanceof Error ? error.message : "Gagal memperbarui data",
+      },
       { status: 500 },
     );
   }

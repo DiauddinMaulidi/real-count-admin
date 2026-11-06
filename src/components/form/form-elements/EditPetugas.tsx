@@ -1,7 +1,7 @@
 "use client";
 
 import ComponentCard from "@/components/common/ComponentCard";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Label from "../Label";
 import Input from "../input/InputField";
@@ -13,6 +13,10 @@ interface Petugas {
   wilayah: string;
   jumlahPemilih: number;
   namaSaksi: string;
+  petugas: {
+    id: number;
+    username: string;
+  } | null;
 }
 
 interface EditPetugasProps {
@@ -31,10 +35,13 @@ const EditPetugas = ({ params }: EditPetugasProps) => {
     wilayah: "",
     jumlahPemilih: 0,
     namaSaksi: "",
+    petugas: {
+      id: 0,
+      username: "",
+    },
   });
   const [loading, setLoading] = useState(true);
   const [save, setSave] = useState(false);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     const getData = async () => {
@@ -52,10 +59,15 @@ const EditPetugas = ({ params }: EditPetugasProps) => {
           wilayah: data.wilayah ?? "",
           jumlahPemilih: data.jumlahPemilih ?? 0,
           namaSaksi: data.namaSaksi ?? "",
+          petugas: data.petugas
+            ? {
+                id: data.petugas.id,
+                username: data.petugas.username ?? "",
+              }
+            : null,
         });
       } catch (error) {
         console.error("Error mengambil data:", error);
-        setError("Gagal memuat data petugas TPS.");
       } finally {
         setLoading(false);
       }
@@ -76,11 +88,27 @@ const EditPetugas = ({ params }: EditPetugasProps) => {
     }));
   };
 
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+
+    setDataPetugas((prev) => ({
+      ...prev,
+      petugas: prev.petugas
+        ? {
+            ...prev.petugas,
+            username: value,
+          }
+        : {
+            id: 0,
+            username: value,
+          },
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setSave(true);
-    setError("");
 
     try {
       const res = await fetch(`/api/tps/${id}`, {
@@ -93,6 +121,9 @@ const EditPetugas = ({ params }: EditPetugasProps) => {
           wilayah: dataPetugas.wilayah,
           namaSaksi: dataPetugas.namaSaksi,
           jumlahPemilih: dataPetugas.jumlahPemilih,
+          petugas: {
+            username: dataPetugas.petugas?.username,
+          },
         }),
       });
 
@@ -108,10 +139,6 @@ const EditPetugas = ({ params }: EditPetugasProps) => {
       router.refresh();
     } catch (error) {
       console.error("Error update:", error);
-
-      setError(
-        error instanceof Error ? error.message : "Gagal memperbarui data.",
-      );
     } finally {
       setSave(false);
     }
@@ -160,6 +187,16 @@ const EditPetugas = ({ params }: EditPetugasProps) => {
             name="jumlahPemilih"
             value={dataPetugas.jumlahPemilih}
             onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <Label>Username</Label>
+          <Input
+            type="text"
+            name="username"
+            value={dataPetugas.petugas?.username ?? ""}
+            onChange={handleUsernameChange}
             required
           />
         </div>

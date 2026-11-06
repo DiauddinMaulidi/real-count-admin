@@ -11,6 +11,11 @@ export default function FormsPetugas() {
     wilayah: "",
     jumlahPemilih: "",
     namaSaksi: "",
+    petugas: {
+      username: "",
+      password: "",
+      role: "petugas",
+    },
   });
   const [loading, setLoading] = useState(false);
 
@@ -26,6 +31,8 @@ export default function FormsPetugas() {
       formData.append("wilayah", form.wilayah);
       formData.append("jumlahPemilih", form.jumlahPemilih);
       formData.append("namaSaksi", form.namaSaksi);
+      formData.append("username", form.petugas.username);
+      formData.append("password", form.petugas.password);
 
       const res = await fetch("/api/tps", {
         method: "POST",
@@ -45,6 +52,11 @@ export default function FormsPetugas() {
         wilayah: "",
         jumlahPemilih: "",
         namaSaksi: "",
+        petugas: {
+          username: "",
+          password: "",
+          role: "petugas",
+        },
       });
     } catch (error) {
       console.error(error);
@@ -99,6 +111,35 @@ export default function FormsPetugas() {
             }
             required
             placeholder="200"
+          />
+        </div>
+        <div>
+          <Label>Username</Label>
+          <Input
+            type="text"
+            value={form.petugas.username}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                petugas: { ...form.petugas, username: e.target.value },
+              })
+            }
+            required
+            placeholder="alexander"
+          />
+        </div>
+        <div>
+          <Label>Password</Label>
+          <Input
+            type="password"
+            value={form.petugas.password}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                petugas: { ...form.petugas, password: e.target.value },
+              })
+            }
+            required
           />
         </div>
 

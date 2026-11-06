@@ -17,11 +17,10 @@ interface Petugas {
   namaSaksi: string;
   wilayah: string;
   jumlahPemilih: number;
-  user: {
+  petugas: {
+    id: number;
     username: string;
-    password: string;
-    role: string;
-  };
+  } | null;
 }
 
 export default function BasicTableOne() {
@@ -72,6 +71,8 @@ export default function BasicTableOne() {
       setDeletingId(null);
     }
   };
+
+  console.log(dataPetugas);
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3">
@@ -140,11 +141,11 @@ export default function BasicTableOne() {
                   </div>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400">
+                  {petugas.petugas?.username ?? "Blm ada"}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400">
                   {petugas.namaTps}
                 </TableCell>
-                {/* <TableCell className="px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400">
-                  {petugas.user.username}
-                </TableCell> */}
                 <TableCell className="px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400">
                   {petugas.jumlahPemilih}
                 </TableCell>

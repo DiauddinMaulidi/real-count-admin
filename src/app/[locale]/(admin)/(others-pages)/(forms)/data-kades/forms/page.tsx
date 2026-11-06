@@ -1,5 +1,5 @@
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import FormsPetugas from "@/components/form/form-elements/FormsPetugas";
+import DefaultInputs from "@/components/form/form-elements/DefaultInputs";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -13,7 +13,7 @@ export default function FormCalon() {
       <PageBreadcrumb pageTitle="Data Calon Kades" tujuan="/data-kades" />
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <div className="space-y-6">
-          <FormsPetugas />
+          <DefaultInputs />
         </div>
       </div>
     </div>
