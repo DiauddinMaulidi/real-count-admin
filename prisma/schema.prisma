@@ -21,11 +21,11 @@ enum StatusHasil {
 
 model User {
   id            Int @id @default(autoincrement())
-  namaUser      String
   username      String @unique
   password      String?
   role          Role   @default(PETUGAS_TPS)
-  tpsId         Int?
+
+  tpsId         Int?   @unique
   tps           Tps?   @relation(fields: [tpsId], references: [id])
 }
 
@@ -34,7 +34,7 @@ model Tps {
   namaTps       String
   wilayah       String?
   jumlahPemilih Int
-  petugas       User[]
+  petugas       User?
   hasilTpsId    HasilTps?
   namaSaksi     String?
 }
