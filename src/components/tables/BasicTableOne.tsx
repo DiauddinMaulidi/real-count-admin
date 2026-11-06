@@ -21,25 +21,52 @@ interface Petugas {
 
 export default function BasicTableOne() {
   const [dataPetugas, setDataPetugas] = useState<Petugas[]>([]);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   useEffect(() => {
     async function getData() {
       try {
-        const petugas = await fetch("/api/petugas");
+        const petugas = await fetch("/api/tps");
 
         if (!petugas.ok) {
           throw new Error("Gagal mengambil data petugas");
         }
 
         const resPetugas = await petugas.json();
-        setDataPetugas(resPetugas);
+        setDataPetugas(resPetugas.dataTps ?? []);
       } catch (error) {
         console.error(error);
+        setDataPetugas([]);
       }
     }
 
     getData();
   }, []);
+
+  const handleDelete = async (id: number) => {
+    const konfirm = window.confirm(
+      "Apakah anda yakin ingin menghapus petugas ini?",
+    );
+
+    if (!konfirm) return;
+
+    try {
+      setDeletingId(id);
+      const res = await fetch(`/api/tps/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        throw new Error("Gagal menghapus data panitia");
+      }
+      setDataPetugas((prev) => prev.filter((petugas) => petugas.id !== id));
+    } catch (error) {
+      console.error("Gagal menghapus data petugas", error);
+      alert("Gagal menghapus data petugas");
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3">
@@ -110,6 +137,8 @@ export default function BasicTableOne() {
                 <TableCell className="px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400">
                   <Button
                     type="button"
+                    onClick={() => handleDelete(petugas.id)}
+                    disabled={deletingId === petugas.id}
                     className="bg-white text-center text-lg font-semibold text-red-500"
                   >
                     <Trash />

@@ -11,6 +11,7 @@ export async function GET() {
           namaTps: true,
           wilayah: true,
           jumlahPemilih: true,
+          namaSaksi: true,
         },
       }),
       getTpsCount(),
