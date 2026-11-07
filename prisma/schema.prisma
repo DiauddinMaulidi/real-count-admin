@@ -21,8 +21,8 @@ enum StatusHasil {
 
 model User {
   id            Int @id @default(autoincrement())
+  clerkId       String? @unique
   username      String @unique
-  password      String?
   role          Role   @default(PETUGAS_TPS)
 
   tpsId         Int?   @unique

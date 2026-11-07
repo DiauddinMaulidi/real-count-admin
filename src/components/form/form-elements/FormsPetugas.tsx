@@ -25,18 +25,28 @@ export default function FormsPetugas() {
     setLoading(true);
 
     try {
-      const formData = new FormData();
+      // const formData = new FormData();
 
-      formData.append("namaTps", form.nama);
-      formData.append("wilayah", form.wilayah);
-      formData.append("jumlahPemilih", form.jumlahPemilih);
-      formData.append("namaSaksi", form.namaSaksi);
-      formData.append("username", form.petugas.username);
-      formData.append("password", form.petugas.password);
+      // formData.append("namaTps", form.nama);
+      // formData.append("wilayah", form.wilayah);
+      // formData.append("jumlahPemilih", form.jumlahPemilih);
+      // formData.append("namaSaksi", form.namaSaksi);
+      // formData.append("username", form.petugas.username);
+      // formData.append("password", form.petugas.password);
 
-      const res = await fetch("/api/tps", {
+      const res = await fetch("/api/admin/petugas", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          namaTps: form.nama,
+          wilayah: form.wilayah,
+          jumlahPemilih: Number(form.jumlahPemilih),
+          namaSaksi: form.namaSaksi,
+          username: form.petugas.username,
+          password: form.petugas.password,
+        }),
       });
 
       const result = await res.json();
@@ -45,7 +55,7 @@ export default function FormsPetugas() {
         throw new Error(result.message);
       }
 
-      alert("Data berhasil disimpan!");
+      alert("Data TPS dan akun petugas berhasil dibuat!");
 
       setForm({
         nama: "",
@@ -55,7 +65,7 @@ export default function FormsPetugas() {
         petugas: {
           username: "",
           password: "",
-          role: "petugas",
+          role: "PETUGAS_TPS",
         },
       });
     } catch (error) {

@@ -1,0 +1,22 @@
+import { getCurrentUser } from "@/lib/auth";
+import { redirect } from "next/navigation";
+
+export default async function AuthCallbackPage() {
+  const user = await getCurrentUser();
+
+  // Akun Clerk belum terdaftar di PostgreSQL
+  if (!user) {
+    redirect("/akses-ditolak");
+  }
+
+  // Pengalihan berdasarkan role
+  if (user.role === "ADMIN") {
+    redirect("/");
+  }
+
+  if (user.role === "PETUGAS_TPS") {
+    redirect("/petugas");
+  }
+
+  redirect("/akses-ditolak");
+}

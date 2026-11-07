@@ -6,6 +6,7 @@ import { NextResponse } from "next/server";
 const intlMiddleware = createMiddleware(routing);
 
 const isProtectedRoute = createRouteMatcher([
+  "/(id|en)/(.*)",
   "/(id|en)/dashboard(.*)",
   "/(id|en)/profile(.*)",
 ]);
@@ -19,7 +20,7 @@ const isNonIntlRoute = createRouteMatcher([
 
 export default clerkMiddleware(async (auth, req) => {
   if (isNonIntlRoute(req)) return NextResponse.next();
-  if (!isProtectedRoute(req)) await auth.protect();
+  if (isProtectedRoute(req)) await auth.protect();
   return intlMiddleware(req);
 });
 
