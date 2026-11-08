@@ -10,15 +10,22 @@ import {
   GridIcon,
   HorizontaLDots,
   ListIcon,
+  MailIcon,
   TableIcon,
   UserCircleIcon,
 } from "../icons/index";
+
+type UserRole = "ADMIN" | "PETUGAS_TPS";
+
+interface AppSidebarProps {
+  userRole: UserRole;
+}
 
 type NavItem = {
   key: string;
   icon: React.ReactNode;
   path?: string;
-  new?: boolean;
+  roles?: string;
   target?: string;
 };
 
@@ -27,31 +34,43 @@ const navItems: NavItem[] = [
     icon: <GridIcon />,
     key: "dashboard",
     path: "/",
+    roles: "ADMIN",
   },
   {
     key: "forms",
     icon: <ListIcon />,
     path: "/data-kades",
+    roles: "ADMIN",
   },
   {
     key: "tables",
     icon: <TableIcon />,
     path: "/petugas-tps",
+    roles: "ADMIN",
   },
   {
     icon: <UserCircleIcon />,
     key: "userProfile",
     path: "/profile",
+    roles: "ADMIN",
+  },
+  {
+    icon: <MailIcon />,
+    key: "petugas",
+    path: "/petugas",
+    roles: "PETUGAS_TPS",
   },
 ];
 
-const AppSidebar: React.FC = () => {
+const AppSidebar: React.FC<AppSidebarProps> = ({ userRole }) => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
 
   const pathname = usePathname();
   const t = useTranslations("sidebar");
 
   const isActive = (path: string) => path === pathname;
+
+  const filteredNavItems = navItems.filter((item) => item.roles === userRole);
 
   const renderMenuItems = (items: NavItem[]) => (
     <ul className="flex flex-col gap-1">
@@ -159,7 +178,7 @@ const AppSidebar: React.FC = () => {
                 )}
               </h2>
 
-              {renderMenuItems(navItems)}
+              {renderMenuItems(filteredNavItems)}
             </div>
           </div>
         </nav>

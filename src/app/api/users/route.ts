@@ -1,25 +1,33 @@
 import { prisma } from "@/lib/prisma";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const users = await prisma.user.findMany({
+    const { userId } = await auth();
+
+    if (!userId) {
+      return NextResponse.json(
+        { message: "Silahkan Login terlebih dahulu" },
+        { status: 401 },
+      );
+    }
+    const users = await prisma.user.findUnique({
+      where: {
+        clerkId: userId,
+      },
       select: {
         id: true,
-        namaUser: true,
-        username: true,
         role: true,
-        tps: {
-          select: {
-            namaTps: true,
-            wilayah: true,
-          },
-        },
-      },
-      orderBy: {
-        id: "asc",
       },
     });
+
+    if (!users) {
+      return NextResponse.json(
+        { message: "Pengguna tidak ditemukan" },
+        { status: 404 },
+      );
+    }
 
     return NextResponse.json(users);
   } catch (error) {

@@ -6,17 +6,17 @@ export default async function AuthCallbackPage() {
 
   // Akun Clerk belum terdaftar di PostgreSQL
   if (!user) {
-    redirect("/akses-ditolak");
+    redirect("/id/signin");
   }
 
   // Pengalihan berdasarkan role
   if (user.role === "ADMIN") {
-    redirect("/");
+    redirect("/id/admin");
   }
 
   if (user.role === "PETUGAS_TPS") {
     redirect("/petugas");
   }
 
-  redirect("/akses-ditolak");
+  redirect("/id/signin");
 }

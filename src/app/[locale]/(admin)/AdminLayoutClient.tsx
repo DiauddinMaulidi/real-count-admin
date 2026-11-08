@@ -4,7 +4,9 @@ import { useSidebar } from "@/context/SidebarContext";
 import AppHeader from "@/layout/AppHeader";
 import AppSidebar from "@/layout/AppSidebar";
 import Backdrop from "@/layout/Backdrop";
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+type UserRole = "ADMIN" | "PETUGAS_TPS";
 
 export default function AdminLayoutClient({
   children,
@@ -12,6 +14,7 @@ export default function AdminLayoutClient({
   children: React.ReactNode;
 }) {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
+  const [users, setUsers] = useState<UserRole | null>(null);
 
   // Dynamic class for main content margin based on sidebar state
   const mainContentMargin = isMobileOpen
@@ -20,10 +23,33 @@ export default function AdminLayoutClient({
       ? "lg:ml-[290px]"
       : "lg:ml-[90px]";
 
+  useEffect(() => {
+    async function fetchUsers() {
+      try {
+        const usersRole = await fetch("/api/users");
+
+        if (!usersRole.ok) {
+          throw new Error("Tidak jelas");
+        }
+
+        const dataUsersRole = await usersRole.json();
+        setUsers(dataUsersRole.role);
+      } catch (error) {
+        console.error("data role user tidak jelas ", error);
+      }
+    }
+
+    fetchUsers();
+  }, []);
+
+  if (!users) {
+    return <div>Role pengguna tidak ditemukan.</div>;
+  }
+
   return (
     <div className="min-h-screen xl:flex">
       {/* Sidebar and Backdrop */}
-      <AppSidebar />
+      <AppSidebar userRole={users} />
       <Backdrop />
       {/* Main Content Area */}
       <div

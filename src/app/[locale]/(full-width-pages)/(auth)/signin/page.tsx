@@ -19,7 +19,7 @@ export default async function SignInPage({
         path={`/${locale}/signin`}
         routing="path"
         signUpUrl={`/${locale}/signup`}
-        forceRedirectUrl="/auth/callback"
+        forceRedirectUrl={`/${locale}/auth`}
       />
     </div>
   );
