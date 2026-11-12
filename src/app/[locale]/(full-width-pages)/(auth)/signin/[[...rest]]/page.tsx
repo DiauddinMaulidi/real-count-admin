@@ -6,21 +6,12 @@ export const metadata: Metadata = {
   description: "This is Next.js Signin Page TailAdmin Dashboard Template",
 };
 
-export default async function SignInPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
+export default async function SignInPage() {
+  // const { locale } = await params;
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <SignIn
-        path={`/${locale}/signin`}
-        routing="path"
-        signUpUrl={`/${locale}/signup`}
-        forceRedirectUrl={`/${locale}/auth`}
-      />
+      <SignIn />
     </div>
   );
 }

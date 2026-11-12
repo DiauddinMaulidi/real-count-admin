@@ -249,7 +249,7 @@ export default function UserDropdown() {
         </ul>
         <button
           className="group mt-3 flex items-center justify-center gap-3 rounded-lg border border-gray-200 px-3 py-2 text-theme-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-          onClick={() => signOut({ redirectUrl: `/${locale}/sign-in` })}
+          onClick={() => signOut({ redirectUrl: `/${locale}/signin` })}
         >
           {t("signOut")}
         </button>

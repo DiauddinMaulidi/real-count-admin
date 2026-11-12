@@ -8,7 +8,7 @@ export default function ForceLogout() {
 
   useEffect(() => {
     signOut({
-      redirectUrl: "/id/signin",
+      redirectUrl: "/en/signin",
     });
   }, [signOut]);
 

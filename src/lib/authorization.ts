@@ -5,11 +5,11 @@ export async function requireAdmin() {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/id/signin");
+    redirect("/en/signin");
   }
 
   if (user.role !== "ADMIN") {
-    redirect("/id/signin");
+    redirect("/en/signin");
   }
 
   return user;
@@ -19,15 +19,15 @@ export async function requirePetugas() {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/id/signin");
+    redirect("/en/signin");
   }
 
   if (user.role !== "PETUGAS_TPS") {
-    redirect("/id/signin");
+    redirect("/en/signin");
   }
 
   if (!user.tpsId) {
-    redirect("/id/signin");
+    redirect("/en/signin");
   }
 
   return user;
