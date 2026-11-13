@@ -45,11 +45,10 @@ export default async function RootLayout({
   return (
     <ClerkProvider
       localization={clerkLocalizations[locale]}
-      signInUrl={`/${locale}/signin`}
-      signUpUrl={`/${locale}/signup`}
+      signInUrl="signin"
       signInFallbackRedirectUrl={`/${locale}/`}
       signUpFallbackRedirectUrl={`/${locale}/`}
-      afterSignOutUrl={`/${locale}/signin`}
+      afterSignOutUrl="signin"
     >
       <html lang={locale} dir={isRtl(locale as Locale) ? "rtl" : "ltr"}>
         <body className={`${outfit.className} dark:bg-gray-900`}>
